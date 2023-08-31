@@ -126,7 +126,7 @@ class diffusion_model:
         self.response_dict = json.loads(self.response['Body'].read())
         
     def display_image(self, img, title):
-        plt.figure(figsize=(3, 3))
+        plt.figure(figsize=(7, 7))
         plt.imshow(np.array(img))
         plt.axis('off')
         plt.title(title)

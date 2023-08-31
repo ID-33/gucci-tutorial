@@ -1,0 +1,64 @@
+th = 0.5
+model.encoded_input_image('/root/gucci-tutorial/img_1.jpg')
+model.encoded_mask_image('/root/gucci-tutorial/bag.jpg')
+payload = { 
+    "prompt":"gucci bag with logo",
+    "image":encoded_input_image, 
+    "mask_image":encoded_mask_image, 
+    "num_inference_steps":70,
+    "guidance_scale":7,
+    "num_images_per_prompt":4,
+    "seed": 1,
+    "batch_size":2
+}
+
+
+
+
+
+th = 0.5
+model.encoded_input_image('/root/gucci-tutorial/dog_suit.jpg')
+model.encoded_mask_image('/root/gucci-tutorial/shirt.jpg')
+payload = { 
+    "prompt":"blue vest with yellow bow tie",
+    "image":encoded_input_image, 
+    "mask_image":encoded_mask_image, 
+    "num_inference_steps":50,
+    "guidance_scale":7.5,
+    "num_images_per_prompt":4,
+    "seed": 10,
+    "negative_prompt": "poorly drawn feet",
+    "batch_size":2
+}
+
+
+th = 0.01
+model.encoded_input_image('/root/gucci-tutorial/dog_suit.jpg')
+model.encoded_mask_image('/root/gucci-tutorial/dog with vest.jpg')
+payload = { 
+    "prompt":"dog with superman suit",
+    "image":encoded_input_image, 
+    "mask_image":encoded_mask_image, 
+    "num_inference_steps":50,
+    "guidance_scale":7.5,
+    "num_images_per_prompt":4,
+    "seed": 10,
+    "negative_prompt": "poorly drawn feet",
+    "batch_size":2
+}
+
+
+th=0.15
+model.encoded_input_image('/root/gucci-tutorial/dog_suit.jpg')
+model.encoded_mask_image('/root/gucci-tutorial/grass.jpg')
+payload = { 
+    "prompt":"the dog is in the swamp",
+    "image":encoded_input_image, 
+    "mask_image":encoded_mask_image, 
+    "num_inference_steps":50,
+    "guidance_scale":7.5,
+    "num_images_per_prompt":4,
+    "seed": 10,
+    "negative_prompt": "poorly drawn feet",
+    "batch_size":2
+}
