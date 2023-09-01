@@ -56,7 +56,7 @@ class masking:
             self.masks = torch.sigmoid(self.preds).squeeze(i)
             self.maskss = outputs.logits
         
-    def plot_images(self):
+    def plot_images(self, th=0.5, inverse=False):
         # _, axs = plt.subplots(nrows=1, ncols = 3, figsize=(3*(len(self.prompts) + 1), 4))
         self.mask_li = []
         
@@ -65,10 +65,10 @@ class masking:
                 # plot heatmap
                 
                 axs[0].axis('off')
-                axs[0].imshow(self.image)
+                # axs[0].imshow(self.image)
                 axs[0].set_title('Heat map')
                 axs[0].imshow(torch.sigmoid(self.preds[i, 0, :])) 
-                axs[0].text(0, -15, self.prompts[i])
+                # axs[0].text(0, -15, self.prompts[i])
                 
                 # plot image segment
                 
@@ -76,7 +76,11 @@ class masking:
                 # Resize the heat map to match the original image size
                 heat_map_resized = cv2.resize(heat_map, (self.image.size[0], self.image.size[1]))
                 # Apply a threshold to the heat map to get the mask
-                mask = (heat_map_resized > 0.5).astype(np.uint8)
+                if inverse:
+                    mask = (heat_map_resized < th).astype(np.uint8)
+                else:
+                    mask = (heat_map_resized > th).astype(np.uint8)
+                
                 self.mask_li.append(mask)
                 # Apply the mask to the original image
                 masked_image = cv2.bitwise_and(np.array(self.image), np.array(self.image), mask=mask)
