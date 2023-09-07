@@ -56,50 +56,58 @@ class masking:
             self.masks = torch.sigmoid(self.preds).squeeze(i)
             self.maskss = outputs.logits
         
-    def plot_images(self, th=0.5, inverse=False):
+    def plot_images(self, th=[0.5], inverse=[False]):
         # _, axs = plt.subplots(nrows=1, ncols = 3, figsize=(3*(len(self.prompts) + 1), 4))
         self.mask_li = []
         
+        if len(th) != len(inverse):
+            inverse = inverse*len(th)
+        
         for i in range(len(self.prompts)):
-                _, axs = plt.subplots(nrows=1, ncols = 3, figsize=(10, 5))
-                # plot heatmap
-                
-                axs[0].axis('off')
-                # axs[0].imshow(self.image)
-                axs[0].set_title('Heat map')
-                axs[0].imshow(torch.sigmoid(self.preds[i, 0, :])) 
-                # axs[0].text(0, -15, self.prompts[i])
-                
-                # plot image segment
-                
-                heat_map = torch.sigmoid(self.preds[i, 0, :]).detach().cpu().numpy()
-                # Resize the heat map to match the original image size
-                heat_map_resized = cv2.resize(heat_map, (self.image.size[0], self.image.size[1]))
-                # Apply a threshold to the heat map to get the mask
-                if inverse:
-                    mask = (heat_map_resized < th).astype(np.uint8)
-                else:
-                    mask = (heat_map_resized > th).astype(np.uint8)
-                
-                self.mask_li.append(mask)
-                # Apply the mask to the original image
-                masked_image = cv2.bitwise_and(np.array(self.image), np.array(self.image), mask=mask)
-                axs[1].axis('off')
-                axs[1].set_title('Segmented part')
-                axs[1].imshow(masked_image)
-                
-                # plot binary image
-                
-                axs[2].set_title('Mask')
-                axs[2].axis('off')
-                axs[2].imshow(mask,cmap='gray')
-                
+            _, axs = plt.subplots(nrows=1, ncols = 3, figsize=(10, 5))
+            # plot heatmap
+
+            axs[0].axis('off')
+            # axs[0].imshow(self.image)
+            axs[0].set_title('Heat map')
+            axs[0].imshow(torch.sigmoid(self.preds[i, 0, :])) 
+            # axs[0].text(0, -15, self.prompts[i])
+
+            # plot image segment
+
+            heat_map = torch.sigmoid(self.preds[i, 0, :]).detach().cpu().numpy()
+            # Resize the heat map to match the original image size
+            heat_map_resized = cv2.resize(heat_map, (self.image.size[0], self.image.size[1]))
+            # Apply a threshold to the heat map to get the mask
+            if inverse[i]:
+                mask = (heat_map_resized < th[i]).astype(np.uint8)
+            else:
+                mask = (heat_map_resized > th[i]).astype(np.uint8)
+
+            self.mask_li.append(mask)
+            # Apply the mask to the original image
+            masked_image = cv2.bitwise_and(np.array(self.image), np.array(self.image), mask=mask)
+            axs[1].axis('off')
+            axs[1].set_title('Segmented part')
+            axs[1].imshow(masked_image)
+
+            # plot binary image
+            axs[2].set_title('Mask')
+            axs[2].axis('off')
+            axs[2].imshow(mask,cmap='gray')
+     
+    def combine_masks(self):
+        self.overall = np.sum(self.mask_li, axis=0) > 0
+        plt.imshow(self.overall, cmap='gray')
+    
     def save_fig(self, save_path):
         for i, item in enumerate(self.prompts):
             mask = self.mask_li[i]
             im = Image.fromarray(mask*255, mode="L")
             im.save(os.path.join(save_path, item + '.jpg'))
             
+        im = Image.fromarray(self.overall*255, mode="L")
+        im.save(os.path.join(save_path, 'final.jpg'))
             
             
 class diffusion_model:
